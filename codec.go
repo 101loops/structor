@@ -19,7 +19,7 @@ type Codec struct {
 	complete bool
 }
 
-func newCodec(rType reflect.Type, set *Set) (*Codec, error) {
+func newCodec(rType reflect.Type, set *Set) *Codec {
 	fieldsCount := rType.NumField()
 
 	fields := []*FieldCodec{}
@@ -38,7 +38,7 @@ func newCodec(rType reflect.Type, set *Set) (*Codec, error) {
 		fields:     fields,
 		fieldNames: fieldNames,
 		attrs:      make(map[string]interface{}),
-	}, nil
+	}
 }
 
 // Type returns the struct's type.

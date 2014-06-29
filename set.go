@@ -24,11 +24,7 @@ func (s *Set) Add(src interface{}) error {
 		return err
 	}
 
-	codec, err := newCodec(rType, s)
-	if err != nil {
-		return err
-	}
-
+	codec := newCodec(rType, s)
 	s.codecs[codec.rType] = codec
 	return nil
 }

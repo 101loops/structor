@@ -18,13 +18,11 @@ var _ = Describe("Set", func() {
 
 		It("from struct", func() {
 			err := set.Add(data)
-
 			Check(err, IsNil)
 		})
 
 		It("from struct pointer", func() {
 			err := set.Add(&data)
-
 			Check(err, IsNil)
 		})
 
@@ -36,10 +34,37 @@ var _ = Describe("Set", func() {
 		})
 
 		It("from string", func() {
-			dummy := "abc 123"
+			dummy := "test"
 
 			err := set.Add(dummy)
 			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
+		})
+
+		It("must add", func() {
+			Check(func() {
+				set.AddMust("test")
+			}, Panics)
+		})
+	})
+
+	Context("get codec", func() {
+
+		set := newTestSet()
+
+		It("for struct", func() {
+			_, err := set.Get(data)
+			Check(err, IsNil)
+		})
+
+		It("for invalid type", func() {
+			_, err := set.Get("test")
+			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
+		})
+
+		It("for non-existent type", func() {
+			type SomeStruct struct{}
+			_, err := set.Get(SomeStruct{})
+			Check(err, Contains, `structor: no registered codec found for type 'structor.SomeStruct'`)
 		})
 	})
 
@@ -49,14 +74,17 @@ var _ = Describe("Set", func() {
 
 		It("from struct", func() {
 			_, err := set.NewReader(data)
-
 			Check(err, IsNil)
 		})
 
 		It("from struct pointer", func() {
 			_, err := set.NewReader(&data)
-
 			Check(err, IsNil)
+		})
+
+		It("from string", func() {
+			_, err := set.NewReader("test")
+			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
 		})
 	})
 
@@ -66,14 +94,17 @@ var _ = Describe("Set", func() {
 
 		It("from struct pointer", func() {
 			_, err := set.NewWriter(&data)
-
 			Check(err, IsNil)
 		})
 
 		It("from struct", func() {
 			_, err := set.NewWriter(data)
-
 			Check(err, Contains, "structor: writer requires pointer to struct")
+		})
+
+		It("from string", func() {
+			_, err := set.NewWriter("test")
+			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
 		})
 	})
 })
