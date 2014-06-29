@@ -7,8 +7,8 @@ import (
 
 type TestStruct struct {
 	Dummy      string `test:"dummytag"`
-	Yummy      int    `test:"yummytag"`
-	ignored    uint64 `test:"-"`
+	Yummy      int    `test:",omitempty"`
+	Ignored    uint64 `test:"-"`
 	unexported uint64
 }
 
