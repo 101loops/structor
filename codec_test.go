@@ -10,7 +10,22 @@ var _ = Describe("Codec", func() {
 	data := newTestData()
 
 	Context("struct codec", func() {
-		// TODO
+
+		set := NewSet("test")
+
+		It("from struct", func() {
+			rTyp := reflect.ValueOf(data).Type()
+			codec := newCodec(rTyp, set)
+
+			Check(codec, NotNil)
+			Check(codec.Type(), Equals, rTyp)
+			Check(codec.FieldNames(), Equals, []string{"Dummy", "Yummy"})
+
+			fields := codec.Fields()
+			Check(fields, HasLen, 2)
+			Check(fields[0].Name, Equals, "Dummy")
+			Check(fields[1].Name, Equals, "Yummy")
+		})
 	})
 
 	Context("create field codec", func() {
