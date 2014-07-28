@@ -1,21 +1,23 @@
 package structor
 
 import (
-	. "github.com/101loops/bdd"
 	"reflect"
+	. "github.com/101loops/bdd"
 )
 
 var _ = Describe("Codec", func() {
 
-	data := newTestData()
+	data := newSimpleStruct()
+	dataType := reflect.TypeOf(SimpleStruct{})
+	strType := reflect.TypeOf("test")
 
 	Context("struct codec", func() {
 
-		set := NewSet("test")
+		tagName := "test"
 
 		It("from struct", func() {
 			rTyp := reflect.ValueOf(data).Type()
-			codec := newCodec(rTyp, set)
+			codec := newCodec(rTyp, tagName)
 
 			Check(codec, NotNil)
 			Check(codec.Type(), Equals, rTyp)
@@ -23,8 +25,48 @@ var _ = Describe("Codec", func() {
 
 			fields := codec.Fields()
 			Check(fields, HasLen, 2)
+
 			Check(fields[0].Name, Equals, "Dummy")
+			Check(fields[0].KeyType, IsNil)
+			Check(fields[0].ElemType, IsNil)
+
 			Check(fields[1].Name, Equals, "Yummy")
+			Check(fields[1].KeyType, IsNil)
+			Check(fields[1].ElemType, IsNil)
+		})
+
+		It("from complex struct", func() {
+			data := newComplexStruct()
+			rTyp := reflect.ValueOf(data).Type()
+			codec := newCodec(rTyp, tagName)
+
+			Check(codec, NotNil)
+			Check(codec.Type(), Equals, rTyp)
+			Check(codec.FieldNames(), Equals, []string{"One", "Two", "Three", "Four"})
+
+			fields := codec.Fields()
+			Check(fields, HasLen, 4)
+
+			Check(fields[2].KeyType, IsNil)
+
+			Check(*fields[3].KeyType, Equals, strType)
+			Check(*fields[3].ElemType, Equals, dataType)
+		})
+
+		It("from recursive struct", func() {
+			data := newRecursiveStruct()
+			rTyp := reflect.ValueOf(data).Type()
+			codec := newCodec(rTyp, tagName)
+
+			Check(codec, NotNil)
+			Check(codec.Type(), Equals, rTyp)
+			Check(codec.FieldNames(), Equals, []string{"Level", "Parent", "Children"})
+
+			fields := codec.Fields()
+			Check(fields, HasLen, 3)
+			Check(fields[0].Name, Equals, "Level")
+			Check(fields[1].Name, Equals, "Parent")
+			Check(fields[2].Name, Equals, "Children")
 		})
 	})
 
@@ -66,12 +108,12 @@ var _ = Describe("Codec", func() {
 
 		It("from tag with modifiers only", func() {
 			codec := newTagCodec(",omitempty")
-			Check(*codec, Equals, TagCodec{Name: "", Mods: []string{"omitempty"}})
+			Check(*codec, Equals, TagCodec{Name: "", Modifiers: []string{"omitempty"}})
 		})
 
 		It("from tag with name and modifiers", func() {
 			codec := newTagCodec("name,omitempty")
-			Check(*codec, Equals, TagCodec{Name: "name", Mods: []string{"omitempty"}})
+			Check(*codec, Equals, TagCodec{Name: "name", Modifiers: []string{"omitempty"}})
 		})
 	})
 })

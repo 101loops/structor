@@ -11,7 +11,7 @@ type Codec struct {
 	fields     []*FieldCodec
 	fieldNames []string
 
-	// TODO
+	// attrs can contain custom attributes of the codec.
 	attrs map[string]interface{}
 
 	// complete is whether the codec is complete.
@@ -19,18 +19,20 @@ type Codec struct {
 	complete bool
 }
 
-func newCodec(rType reflect.Type, set *Set) *Codec {
+func newCodec(rType reflect.Type, tagName string) *Codec {
 	fieldsCount := rType.NumField()
 
 	fields := []*FieldCodec{}
 	fieldNames := []string{}
 
 	for idx := 0; idx < fieldsCount; idx++ {
-		fCodec := newFieldCodec(rType, idx, set.tagName)
-		if fCodec != nil {
-			fields = append(fields, fCodec)
-			fieldNames = append(fieldNames, fCodec.Name)
+		fCodec := newFieldCodec(rType, idx, tagName)
+		if fCodec == nil {
+			continue
 		}
+
+		fields = append(fields, fCodec)
+		fieldNames = append(fieldNames, fCodec.Name)
 	}
 
 	return &Codec{
@@ -46,6 +48,11 @@ func (c *Codec) Type() reflect.Type {
 	return c.rType
 }
 
+// Complete is whether the codec is completely processed.
+func (c *Codec) Complete() bool {
+	return c.complete
+}
+
 // Fields returns the struct's field codecs.
 func (c *Codec) Fields() []*FieldCodec {
 	return c.fields
@@ -58,11 +65,13 @@ func (c *Codec) FieldNames() []string {
 
 // FieldCodec represents a struct field.
 type FieldCodec struct {
-	Index int
-	Name  string
-	Label string
-	Tag   *TagCodec
-	Type  reflect.Type
+	Index    int
+	Name     string
+	Label    string
+	Tag      *TagCodec
+	Type     reflect.Type
+	KeyType  *reflect.Type
+	ElemType *reflect.Type
 }
 
 func newFieldCodec(rType reflect.Type, idx int, tagName string) *FieldCodec {
@@ -83,19 +92,23 @@ func newFieldCodec(rType reflect.Type, idx int, tagName string) *FieldCodec {
 		fLabel = fName
 	}
 
+	keyType, elemType := subTypesOf(fType)
+
 	return &FieldCodec{
-		Index: idx,
-		Name:  fName,
-		Label: fLabel,
-		Tag:   fTag,
-		Type:  fType,
+		Index:    idx,
+		Name:     fName,
+		Label:    fLabel,
+		Tag:      fTag,
+		Type:     fType,
+		KeyType:  keyType,
+		ElemType: elemType,
 	}
 }
 
 // TagCodec represents a struct field's tag.
 type TagCodec struct {
-	Name string
-	Mods []string
+	Name      string
+	Modifiers []string
 }
 
 func newTagCodec(tag string) *TagCodec {

@@ -7,25 +7,70 @@ import (
 
 // Set is a collection of codecs, for a specific tag name.
 type Set struct {
-	tagName string
-	codecs  map[reflect.Type]*Codec
+	tagName  string
+	codecs   map[reflect.Type]*Codec
+	validate func(*Codec) error
 }
 
 // NewSet returns a new codec set for the passed-in tag name.
 func NewSet(tagName string) *Set {
-	return &Set{tagName, make(map[reflect.Type]*Codec)}
+	return &Set{
+		tagName: tagName,
+		codecs:  make(map[reflect.Type]*Codec),
+		validate: func(*Codec) error {
+			return nil
+		},
+	}
 }
 
 // Add creates a new codec from the passed-in value and adds it to the set.
 // It expects a struct, struct pointer or reflect.Type of a struct.
 func (s *Set) Add(src interface{}) error {
-	rType, err := codecType(src)
+	rType, err := typeOf(src)
 	if err != nil {
 		return err
 	}
 
-	codec := newCodec(rType, s)
-	s.codecs[codec.rType] = codec
+	if _, found := s.codecs[rType]; found {
+		return nil
+	}
+
+	codec := newCodec(rType, s.tagName)
+	s.codecs[rType] = codec // added eagerly for recursive types
+
+	for _, f := range codec.Fields() {
+		subTypes := []*reflect.Type{&f.Type, f.KeyType, f.ElemType}
+		for _, typ := range subTypes {
+			if typ == nil {
+				continue
+			}
+
+			var subType reflect.Type
+			switch (*typ).Kind() {
+			case reflect.Struct:
+				subType = *typ
+			case reflect.Ptr:
+				if (*typ).Elem().Kind() == reflect.Struct {
+					subType = (*typ).Elem()
+				}
+			}
+			if subType == nil {
+				continue
+			}
+
+			if err := s.Add(subType); err != nil {
+				delete(s.codecs, rType)
+				return err
+			}
+		}
+	}
+
+	if err := s.validate(codec); err != nil {
+		delete(s.codecs, rType)
+		return err
+	}
+
+	codec.complete = true
 	return nil
 }
 
@@ -38,10 +83,16 @@ func (s *Set) AddMust(src interface{}) {
 	}
 }
 
+// SetValidateFunc defines a function to validate a codec before it is added.
+// When it returns an error the codec is not added to the set.
+func (s *Set) SetValidateFunc(fn func(*Codec) error) {
+	s.validate = fn
+}
+
 // Get returns the according codec for the passed-in value.
 // It returns an error if the value is invalid or no codec was found.
 func (s *Set) Get(src interface{}) (*Codec, error) {
-	rType, err := codecType(src)
+	rType, err := typeOf(src)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +127,7 @@ func (s *Set) NewWriter(dst interface{}) (*Writer, error) {
 	return newWriter(dst, reader)
 }
 
-func codecType(src interface{}) (reflect.Type, error) {
+func typeOf(src interface{}) (reflect.Type, error) {
 	rVal := reflect.ValueOf(src)
 	rKind := rVal.Kind()
 
@@ -88,5 +139,5 @@ func codecType(src interface{}) (reflect.Type, error) {
 		return rVal.Elem().Type(), nil
 	}
 
-	return nil, fmt.Errorf("structor: value is not a struct, struct pointer or reflect.Type, but %q", rKind)
+	return nil, fmt.Errorf("structor: value is not a struct, struct pointer or reflect.Type - but %q", rKind)
 }

@@ -7,7 +7,7 @@ import (
 var _ = Describe("Writer", func() {
 
 	set := newTestSet()
-	data := newTestData()
+	data := newSimpleStruct()
 
 	Context("set field value", func() {
 

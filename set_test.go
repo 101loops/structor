@@ -1,13 +1,14 @@
 package structor
 
 import (
-	. "github.com/101loops/bdd"
+	"fmt"
 	"reflect"
+	. "github.com/101loops/bdd"
 )
 
 var _ = Describe("Set", func() {
 
-	data := newTestData()
+	data := newSimpleStruct()
 
 	Context("add codec", func() {
 
@@ -37,13 +38,29 @@ var _ = Describe("Set", func() {
 			dummy := "test"
 
 			err := set.Add(dummy)
-			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
+			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type - but "string"`)
 		})
 
 		It("must add", func() {
 			Check(func() {
 				set.AddMust("test")
 			}, Panics)
+		})
+
+		It("with validator", func() {
+			set.SetValidateFunc(func(c *Codec) error {
+				return fmt.Errorf("validation error")
+			})
+
+			Check(set.Add(&data), Contains, `validation error`)
+		})
+
+		It("recursive type", func() {
+			t := reflect.TypeOf(newComplexStruct())
+			err := set.Add(t)
+
+			Check(err, IsNil)
+			Check(set.codecs, HasLen, 2)
 		})
 	})
 
@@ -58,7 +75,7 @@ var _ = Describe("Set", func() {
 
 		It("for invalid type", func() {
 			_, err := set.Get("test")
-			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
+			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type - but "string"`)
 		})
 
 		It("for non-existent type", func() {
@@ -84,7 +101,7 @@ var _ = Describe("Set", func() {
 
 		It("from string", func() {
 			_, err := set.NewReader("test")
-			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
+			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type - but "string"`)
 		})
 	})
 
@@ -104,7 +121,7 @@ var _ = Describe("Set", func() {
 
 		It("from string", func() {
 			_, err := set.NewWriter("test")
-			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type, but "string"`)
+			Check(err, Contains, `structor: value is not a struct, struct pointer or reflect.Type - but "string"`)
 		})
 	})
 })

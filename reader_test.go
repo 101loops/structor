@@ -7,7 +7,7 @@ import (
 var _ = Describe("Reader", func() {
 
 	set := newTestSet()
-	data := newTestData()
+	data := newSimpleStruct()
 
 	Context("get field value", func() {
 
