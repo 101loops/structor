@@ -48,7 +48,7 @@ var _ = Describe("Set", func() {
 		})
 
 		It("with validator", func() {
-			set.SetValidateFunc(func(c *Codec) error {
+			set.SetValidateFunc(func(s *Set, c *Codec) error {
 				return fmt.Errorf("validation error")
 			})
 

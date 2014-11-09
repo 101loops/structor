@@ -9,7 +9,7 @@ import (
 type Set struct {
 	tagName  string
 	codecs   map[reflect.Type]*Codec
-	validate func(*Codec) error
+	validate func(*Set, *Codec) error
 }
 
 // NewSet returns a new codec set for the passed-in tag name.
@@ -17,7 +17,7 @@ func NewSet(tagName string) *Set {
 	return &Set{
 		tagName: tagName,
 		codecs:  make(map[reflect.Type]*Codec),
-		validate: func(*Codec) error {
+		validate: func(*Set, *Codec) error {
 			return nil
 		},
 	}
@@ -65,7 +65,7 @@ func (s *Set) Add(src interface{}) error {
 		}
 	}
 
-	if err := s.validate(codec); err != nil {
+	if err := s.validate(s, codec); err != nil {
 		delete(s.codecs, rType)
 		return err
 	}
@@ -85,7 +85,7 @@ func (s *Set) AddMust(src interface{}) {
 
 // SetValidateFunc defines a function to validate a codec before it is added.
 // When it returns an error the codec is not added to the set.
-func (s *Set) SetValidateFunc(fn func(*Codec) error) {
+func (s *Set) SetValidateFunc(fn func(*Set, *Codec) error) {
 	s.validate = fn
 }
 
