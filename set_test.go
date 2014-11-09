@@ -62,6 +62,27 @@ var _ = Describe("Set", func() {
 			Check(err, IsNil)
 			Check(set.codecs, HasLen, 2)
 		})
+
+		It("sub-type with validation error", func() {
+			type InvalidSubStruct struct {
+				Field1 string
+				Field2 string
+			}
+			type InvalidStruct struct {
+				Sub InvalidSubStruct
+			}
+
+			set.SetValidateFunc(func(s *Set, c *Codec) error {
+				if len(c.FieldNames()) > 1 {
+					return fmt.Errorf("validation error")
+				}
+				return nil
+			})
+
+			err := set.Add(InvalidStruct{})
+			Check(err, Contains, `validation error`)
+			Check(set.codecs, HasLen, 0)
+		})
 	})
 
 	Context("get codec", func() {
@@ -69,8 +90,10 @@ var _ = Describe("Set", func() {
 		set := newTestSet()
 
 		It("for struct", func() {
-			_, err := set.Get(data)
+			codec, err := set.Get(data)
+
 			Check(err, IsNil)
+			Check(codec.Complete(), IsTrue)
 		})
 
 		It("for invalid type", func() {
