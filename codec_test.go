@@ -29,6 +29,7 @@ var _ = Describe("Codec", func() {
 			Check(fields[0].Name, Equals, "Dummy")
 			Check(fields[0].KeyType, IsNil)
 			Check(fields[0].ElemType, IsNil)
+			Check(fields[0].Tag, Equals, &TagCodec{Name: "dummytag"})
 
 			Check(fields[1].Name, Equals, "Yummy")
 			Check(fields[1].KeyType, IsNil)
@@ -99,6 +100,7 @@ var _ = Describe("Codec", func() {
 		It("from empty tag", func() {
 			codec := newTagCodec("")
 			Check(*codec, Equals, TagCodec{})
+			Check(codec.HasModifier("omitempty"), IsFalse)
 		})
 
 		It("from tag with name", func() {
@@ -109,6 +111,7 @@ var _ = Describe("Codec", func() {
 		It("from tag with modifiers only", func() {
 			codec := newTagCodec(",omitempty")
 			Check(*codec, Equals, TagCodec{Name: "", Modifiers: []string{"omitempty"}})
+			Check(codec.HasModifier("omitempty"), IsTrue)
 		})
 
 		It("from tag with name and modifiers", func() {

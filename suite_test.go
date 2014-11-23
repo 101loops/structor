@@ -5,26 +5,6 @@ import (
 	. "github.com/101loops/bdd"
 )
 
-type SimpleStruct struct {
-	Dummy      string `test:"dummytag"`
-	Yummy      int    `test:",omitempty"`
-	Ignored    uint64 `test:"-"`
-	unexported uint64
-}
-
-type ComplexStruct struct {
-	One   SimpleStruct
-	Two   *SimpleStruct
-	Three []SimpleStruct
-	Four  map[string]SimpleStruct
-}
-
-type RecursiveStruct struct {
-	Level    int
-	Parent   *RecursiveStruct
-	Children []RecursiveStruct
-}
-
 func TestSuite(t *testing.T) {
 	RunSpecs(t, "reflector Suite")
 }
@@ -35,11 +15,25 @@ func newTestSet() *Set {
 	return set
 }
 
+type SimpleStruct struct {
+	Dummy      string `test:"dummytag"`
+	Yummy      int    `test:",omitempty"`
+	Ignored    uint64 `test:"-"`
+	unexported uint64
+}
+
 func newSimpleStruct() SimpleStruct {
 	return SimpleStruct{
 		Dummy: "test",
 		Yummy: 42,
 	}
+}
+
+type ComplexStruct struct {
+	One   SimpleStruct
+	Two   *SimpleStruct
+	Three []SimpleStruct
+	Four  map[string]SimpleStruct
 }
 
 func newComplexStruct() ComplexStruct {
@@ -48,6 +42,12 @@ func newComplexStruct() ComplexStruct {
 		One: newSimpleStruct(),
 		Two: &two,
 	}
+}
+
+type RecursiveStruct struct {
+	Level    int
+	Parent   *RecursiveStruct
+	Children []RecursiveStruct
 }
 
 func newRecursiveStruct() RecursiveStruct {
