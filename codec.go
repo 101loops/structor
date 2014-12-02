@@ -25,27 +25,24 @@ type Codec struct {
 }
 
 func newCodec(rType reflect.Type, tagName string) *Codec {
+	ret := &Codec{
+		Type:  rType,
+		Attrs: make(map[string]interface{}),
+	}
+
 	fieldsCount := rType.NumField()
-
-	fields := []*FieldCodec{}
-	fieldNames := []string{}
-
 	for idx := 0; idx < fieldsCount; idx++ {
 		fCodec := newFieldCodec(rType, idx, tagName)
 		if fCodec == nil {
 			continue
 		}
+		fCodec.Struct = ret
 
-		fields = append(fields, fCodec)
-		fieldNames = append(fieldNames, fCodec.Name)
+		ret.Fields = append(ret.Fields, fCodec)
+		ret.FieldNames = append(ret.FieldNames, fCodec.Name)
 	}
 
-	return &Codec{
-		Type:       rType,
-		Fields:     fields,
-		FieldNames: fieldNames,
-		Attrs:      make(map[string]interface{}),
-	}
+	return ret
 }
 
 // FieldCodec represents a struct field.
@@ -53,6 +50,7 @@ type FieldCodec struct {
 	Index    int
 	Name     string
 	Label    string
+	Struct   *Codec
 	Tag      *TagCodec
 	Type     reflect.Type
 	KeyType  *reflect.Type
