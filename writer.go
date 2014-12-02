@@ -27,7 +27,7 @@ func newWriter(dst interface{}, reader *Reader) (*Writer, error) {
 
 // Fields returns the writable fields of the struct.
 func (w *Writer) Fields() []*FieldWriter {
-	fields := make([]*FieldWriter, len(w.reader.codec.fields))
+	fields := make([]*FieldWriter, len(w.reader.codec.Fields))
 	for idx, fld := range w.reader.Fields() {
 		fields[idx] = &FieldWriter{fld, w}
 	}

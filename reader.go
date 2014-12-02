@@ -25,8 +25,8 @@ func newReader(src interface{}, codec *Codec) *Reader {
 
 // Fields returns the readable fields of the struct.
 func (r *Reader) Fields() []*FieldReader {
-	fields := make([]*FieldReader, len(r.codec.fields))
-	for idx, fld := range r.codec.fields {
+	fields := make([]*FieldReader, len(r.codec.Fields))
+	for idx, fld := range r.codec.Fields {
 		fields[idx] = &FieldReader{fld, r}
 	}
 	return fields

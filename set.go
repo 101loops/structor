@@ -38,7 +38,7 @@ func (s *Set) Add(src interface{}) error {
 	codec := newCodec(rType, s.tagName)
 	s.codecs[rType] = codec // added eagerly for recursive types
 
-	for _, f := range codec.Fields() {
+	for _, f := range codec.Fields {
 		subTypes := []*reflect.Type{&f.Type, f.KeyType, f.ElemType}
 		for _, typ := range subTypes {
 			if typ == nil {
@@ -70,7 +70,7 @@ func (s *Set) Add(src interface{}) error {
 		return err
 	}
 
-	codec.complete = true
+	codec.Complete = true
 	return nil
 }
 

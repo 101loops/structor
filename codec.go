@@ -7,16 +7,21 @@ import (
 
 // Codec represents a struct and its fields.
 type Codec struct {
-	rType      reflect.Type
-	fields     []*FieldCodec
-	fieldNames []string
+	// Type returns the struct's type.
+	Type reflect.Type
 
-	// attrs can contain custom attributes of the codec.
-	attrs map[string]interface{}
+	// Fields returns the struct's field codecs.
+	Fields []*FieldCodec
 
-	// complete is whether the codec is complete.
+	// FieldNames returns the struct's exportable field names.
+	FieldNames []string
+
+	// Attrs can contain custom attributes of the codec.
+	Attrs map[string]interface{}
+
+	// Complete is whether the codec is completely processed.
 	// An incomplete codec may be encountered when walking a recursive struct.
-	complete bool
+	Complete bool
 }
 
 func newCodec(rType reflect.Type, tagName string) *Codec {
@@ -36,31 +41,11 @@ func newCodec(rType reflect.Type, tagName string) *Codec {
 	}
 
 	return &Codec{
-		rType:      rType,
-		fields:     fields,
-		fieldNames: fieldNames,
-		attrs:      make(map[string]interface{}),
+		Type:       rType,
+		Fields:     fields,
+		FieldNames: fieldNames,
+		Attrs:      make(map[string]interface{}),
 	}
-}
-
-// Type returns the struct's type.
-func (c *Codec) Type() reflect.Type {
-	return c.rType
-}
-
-// Complete is whether the codec is completely processed.
-func (c *Codec) Complete() bool {
-	return c.complete
-}
-
-// Fields returns the struct's field codecs.
-func (c *Codec) Fields() []*FieldCodec {
-	return c.fields
-}
-
-// FieldNames returns the struct's exportable field names.
-func (c *Codec) FieldNames() []string {
-	return c.fieldNames
 }
 
 // FieldCodec represents a struct field.

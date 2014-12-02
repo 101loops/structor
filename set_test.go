@@ -73,7 +73,7 @@ var _ = Describe("Set", func() {
 			}
 
 			set.SetValidateFunc(func(s *Set, c *Codec) error {
-				if len(c.FieldNames()) > 1 {
+				if len(c.FieldNames) > 1 {
 					return fmt.Errorf("validation error")
 				}
 				return nil
@@ -93,7 +93,7 @@ var _ = Describe("Set", func() {
 			codec, err := set.Get(data)
 
 			Check(err, IsNil)
-			Check(codec.Complete(), IsTrue)
+			Check(codec.Complete, IsTrue)
 		})
 
 		It("for invalid type", func() {

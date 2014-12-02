@@ -18,6 +18,7 @@ func newTestSet() *Set {
 type SimpleStruct struct {
 	Dummy      string `test:"dummytag"`
 	Yummy      int    `test:",omitempty"`
+	_Mummy     uint64
 	Ignored    uint64 `test:"-"`
 	unexported uint64
 }

@@ -20,10 +20,10 @@ var _ = Describe("Codec", func() {
 			codec := newCodec(rTyp, tagName)
 
 			Check(codec, NotNil)
-			Check(codec.Type(), Equals, rTyp)
-			Check(codec.FieldNames(), Equals, []string{"Dummy", "Yummy"})
+			Check(codec.Type, Equals, rTyp)
+			Check(codec.FieldNames, Equals, []string{"Dummy", "Yummy"})
 
-			fields := codec.Fields()
+			fields := codec.Fields
 			Check(fields, HasLen, 2)
 
 			Check(fields[0].Name, Equals, "Dummy")
@@ -42,10 +42,10 @@ var _ = Describe("Codec", func() {
 			codec := newCodec(rTyp, tagName)
 
 			Check(codec, NotNil)
-			Check(codec.Type(), Equals, rTyp)
-			Check(codec.FieldNames(), Equals, []string{"One", "Two", "Three", "Four"})
+			Check(codec.Type, Equals, rTyp)
+			Check(codec.FieldNames, Equals, []string{"One", "Two", "Three", "Four"})
 
-			fields := codec.Fields()
+			fields := codec.Fields
 			Check(fields, HasLen, 4)
 
 			Check(fields[2].KeyType, IsNil)
@@ -60,10 +60,10 @@ var _ = Describe("Codec", func() {
 			codec := newCodec(rTyp, tagName)
 
 			Check(codec, NotNil)
-			Check(codec.Type(), Equals, rTyp)
-			Check(codec.FieldNames(), Equals, []string{"Level", "Parent", "Children"})
+			Check(codec.Type, Equals, rTyp)
+			Check(codec.FieldNames, Equals, []string{"Level", "Parent", "Children"})
 
-			fields := codec.Fields()
+			fields := codec.Fields
 			Check(fields, HasLen, 3)
 			Check(fields[0].Name, Equals, "Level")
 			Check(fields[1].Name, Equals, "Parent")
