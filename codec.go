@@ -36,7 +36,7 @@ func newCodec(rType reflect.Type, tagName string) *Codec {
 		if fCodec == nil {
 			continue
 		}
-		fCodec.Struct = ret
+		fCodec.Parent = ret
 
 		ret.Fields = append(ret.Fields, fCodec)
 		ret.FieldNames = append(ret.FieldNames, fCodec.Name)
@@ -47,10 +47,10 @@ func newCodec(rType reflect.Type, tagName string) *Codec {
 
 // FieldCodec represents a struct field.
 type FieldCodec struct {
+	Parent   *Codec
 	Index    int
 	Name     string
 	Label    string
-	Struct   *Codec
 	Tag      *TagCodec
 	Type     reflect.Type
 	KeyType  *reflect.Type

@@ -30,12 +30,12 @@ var _ = Describe("Codec", func() {
 			Check(fields[0].KeyType, IsNil)
 			Check(fields[0].ElemType, IsNil)
 			Check(fields[0].Tag, Equals, &TagCodec{Name: "dummytag"})
-			Check(fields[0].Struct, Equals, codec)
+			Check(fields[0].Parent, Equals, codec)
 
 			Check(fields[1].Name, Equals, "Yummy")
 			Check(fields[1].KeyType, IsNil)
 			Check(fields[1].ElemType, IsNil)
-			Check(fields[1].Struct, Equals, codec)
+			Check(fields[1].Parent, Equals, codec)
 		})
 
 		It("from complex struct", func() {
