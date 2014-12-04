@@ -29,7 +29,7 @@ var _ = Describe("Codec", func() {
 			Check(fields[0].Name, Equals, "Dummy")
 			Check(fields[0].KeyType, IsNil)
 			Check(fields[0].ElemType, IsNil)
-			Check(fields[0].Tag, Equals, &TagCodec{Values: []string{"dummytag"}})
+			Check(fields[0].Tag, Equals, &TagCodec{Values: map[int]string{0: "dummytag"}})
 			Check(fields[0].Parent, Equals, codec)
 
 			Check(fields[1].Name, Equals, "Yummy")
@@ -81,7 +81,7 @@ var _ = Describe("Codec", func() {
 			Check(codec, NotNil)
 			Check(codec.Index, Equals, 0)
 			Check(codec.Name, Equals, "Dummy")
-			Check(*codec.Tag, Equals, TagCodec{Values: []string{"dummytag"}})
+			Check(*codec.Tag, Equals, TagCodec{Values: map[int]string{0: "dummytag"}})
 			Check(codec.Type, Equals, reflect.ValueOf("string").Type())
 		})
 
@@ -100,24 +100,24 @@ var _ = Describe("Codec", func() {
 
 		It("from empty tag", func() {
 			codec := newTagCodec("")
-			Check(*codec, Equals, TagCodec{})
+			Check(*codec, Equals, TagCodec{map[int]string{}})
 			Check(codec.HasModifier("omitempty"), IsFalse)
 		})
 
 		It("from tag with name", func() {
 			codec := newTagCodec("name")
-			Check(*codec, Equals, TagCodec{[]string{"name"}})
+			Check(*codec, Equals, TagCodec{map[int]string{0: "name"}})
 		})
 
 		It("from tag with modifiers only", func() {
 			codec := newTagCodec(",omitempty")
-			Check(*codec, Equals, TagCodec{[]string{"", "omitempty"}})
+			Check(*codec, Equals, TagCodec{map[int]string{0: "", 1: "omitempty"}})
 			Check(codec.HasModifier("omitempty"), IsTrue)
 		})
 
 		It("from tag with name and modifiers", func() {
 			codec := newTagCodec("name,omitempty")
-			Check(*codec, Equals, TagCodec{[]string{"name", "omitempty"}})
+			Check(*codec, Equals, TagCodec{map[int]string{0: "name", 1: "omitempty"}})
 		})
 	})
 })

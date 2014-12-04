@@ -79,14 +79,16 @@ func newFieldCodec(rType reflect.Type, idx int, tagName string) *FieldCodec {
 
 // TagCodec represents a struct field's tag.
 type TagCodec struct {
-	Values []string
+	Values map[int]string
 }
 
 func newTagCodec(tag string) *TagCodec {
-	if strings.TrimSpace(tag) == "" {
-		return &TagCodec{}
+	vals := make(map[int]string, 0)
+	if strings.TrimSpace(tag) != "" {
+		for i, t := range strings.Split(tag, ",") {
+			vals[i] = t
+		}
 	}
-	vals := strings.Split(tag, ",")
 	return &TagCodec{vals}
 }
 
