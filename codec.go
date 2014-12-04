@@ -47,12 +47,29 @@ func newCodec(rType reflect.Type, tagName string) *Codec {
 
 // FieldCodec represents a struct field.
 type FieldCodec struct {
-	Parent   *Codec
-	Index    int
-	Name     string
-	Tag      *TagCodec
-	Type     reflect.Type
-	KeyType  *reflect.Type
+
+	// Parent is a reference to the struct the field is in.
+	Parent *Codec
+
+	// Index is the index of the field in the struct.
+	Index int
+
+	// Name is the name of the field in the struct.
+	Name string
+
+	// Tag is the codec for the field's tags.
+	Tag *TagCodec
+
+	// Attrs can contain custom attributes of the field's codec.
+	Attrs map[string]interface{}
+
+	// Type is the field's type.
+	Type reflect.Type
+
+	// KeyType is the type of the field's key, if any.
+	KeyType *reflect.Type
+
+	// ElemType is the type of the field's collection's value type, if any.
 	ElemType *reflect.Type
 }
 
