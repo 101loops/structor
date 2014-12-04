@@ -101,6 +101,7 @@ var _ = Describe("Codec", func() {
 		It("from empty tag", func() {
 			codec := newTagCodec("")
 			Check(*codec, Equals, TagCodec{map[int]string{}})
+			Check(codec.IndexOf("not-found"), EqualsNum, -1)
 		})
 
 		It("from tag with name", func() {
@@ -111,6 +112,7 @@ var _ = Describe("Codec", func() {
 		It("from tag with modifiers only", func() {
 			codec := newTagCodec(",omitempty")
 			Check(*codec, Equals, TagCodec{map[int]string{0: "", 1: "omitempty"}})
+			Check(codec.IndexOf("omitempty"), EqualsNum, 1)
 		})
 
 		It("from tag with name and modifiers", func() {

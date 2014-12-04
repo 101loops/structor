@@ -108,3 +108,13 @@ func newTagCodec(tag string) *TagCodec {
 	}
 	return &TagCodec{vals}
 }
+
+// IndexOf returns the index of the passed-in value.
+func (tc *TagCodec) IndexOf(want string) int {
+	for i, tag := range tc.Values {
+		if tag == want {
+			return i
+		}
+	}
+	return -1
+}
