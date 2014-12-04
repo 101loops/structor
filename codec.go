@@ -50,7 +50,6 @@ type FieldCodec struct {
 	Parent   *Codec
 	Index    int
 	Name     string
-	Label    string
 	Tag      *TagCodec
 	Type     reflect.Type
 	KeyType  *reflect.Type
@@ -66,21 +65,11 @@ func newFieldCodec(rType reflect.Type, idx int, tagName string) *FieldCodec {
 	fType := fld.Type
 	fName := fld.Name
 	fTag := newTagCodec(fld.Tag.Get(tagName))
-
-	fLabel := fTag.Name
-	if fLabel == "-" {
-		return nil
-	}
-	if fLabel == "" {
-		fLabel = fName
-	}
-
 	keyType, elemType := subTypesOf(fType)
 
 	return &FieldCodec{
 		Index:    idx,
 		Name:     fName,
-		Label:    fLabel,
 		Tag:      fTag,
 		Type:     fType,
 		KeyType:  keyType,
@@ -90,29 +79,20 @@ func newFieldCodec(rType reflect.Type, idx int, tagName string) *FieldCodec {
 
 // TagCodec represents a struct field's tag.
 type TagCodec struct {
-	Name      string
-	Modifiers []string
+	Values []string
 }
 
 func newTagCodec(tag string) *TagCodec {
-	tagSplit := strings.Split(tag, ",")
-
-	var mods []string
-	if len(tagSplit) > 1 {
-		mods = tagSplit[1:]
+	if strings.TrimSpace(tag) == "" {
+		return &TagCodec{}
 	}
-
-	var name string
-	if len(tagSplit) > 0 && tagSplit[0] != "" {
-		name = tagSplit[0]
-	}
-
-	return &TagCodec{name, mods}
+	vals := strings.Split(tag, ",")
+	return &TagCodec{vals}
 }
 
 // HasModifier returns whether the TagCodec contains the given modifier.
 func (tc *TagCodec) HasModifier(want string) bool {
-	for _, tag := range tc.Modifiers {
+	for _, tag := range tc.Values {
 		if tag == want {
 			return true
 		}
