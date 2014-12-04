@@ -102,22 +102,26 @@ var _ = Describe("Codec", func() {
 			codec := newTagCodec("")
 			Check(*codec, Equals, TagCodec{map[int]string{}})
 			Check(codec.IndexOf("not-found"), EqualsNum, -1)
+			Check(codec.Modifiers(), IsEmpty)
 		})
 
 		It("from tag with name", func() {
 			codec := newTagCodec("name")
 			Check(*codec, Equals, TagCodec{map[int]string{0: "name"}})
+			Check(codec.Modifiers(), IsEmpty)
 		})
 
 		It("from tag with modifiers only", func() {
 			codec := newTagCodec(",omitempty")
 			Check(*codec, Equals, TagCodec{map[int]string{0: "", 1: "omitempty"}})
 			Check(codec.IndexOf("omitempty"), EqualsNum, 1)
+			Check(codec.Modifiers(), Equals, []string{"omitempty"})
 		})
 
 		It("from tag with name and modifiers", func() {
 			codec := newTagCodec("name,omitempty")
 			Check(*codec, Equals, TagCodec{map[int]string{0: "name", 1: "omitempty"}})
+			Check(codec.Modifiers(), Equals, []string{"omitempty"})
 		})
 	})
 })

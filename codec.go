@@ -109,6 +109,16 @@ func newTagCodec(tag string) *TagCodec {
 	return &TagCodec{vals}
 }
 
+func (tc *TagCodec) Modifiers() []string {
+	var mods []string
+	for i, t := range tc.Values {
+		if i > 0 {
+			mods = append(mods, t)
+		}
+	}
+	return mods
+}
+
 // IndexOf returns the index of the passed-in value.
 func (tc *TagCodec) IndexOf(want string) int {
 	for i, tag := range tc.Values {
