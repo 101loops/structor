@@ -91,6 +91,7 @@ func newFieldCodec(rType reflect.Type, idx int, tagName string) *FieldCodec {
 		Type:     fType,
 		KeyType:  keyType,
 		ElemType: elemType,
+		Attrs:    make(map[string]interface{}),
 	}
 }
 
