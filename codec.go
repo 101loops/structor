@@ -91,13 +91,3 @@ func newTagCodec(tag string) *TagCodec {
 	}
 	return &TagCodec{vals}
 }
-
-// HasModifier returns whether the TagCodec contains the given modifier.
-func (tc *TagCodec) HasModifier(want string) bool {
-	for _, tag := range tc.Values {
-		if tag == want {
-			return true
-		}
-	}
-	return false
-}

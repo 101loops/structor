@@ -101,7 +101,6 @@ var _ = Describe("Codec", func() {
 		It("from empty tag", func() {
 			codec := newTagCodec("")
 			Check(*codec, Equals, TagCodec{map[int]string{}})
-			Check(codec.HasModifier("omitempty"), IsFalse)
 		})
 
 		It("from tag with name", func() {
@@ -112,7 +111,6 @@ var _ = Describe("Codec", func() {
 		It("from tag with modifiers only", func() {
 			codec := newTagCodec(",omitempty")
 			Check(*codec, Equals, TagCodec{map[int]string{0: "", 1: "omitempty"}})
-			Check(codec.HasModifier("omitempty"), IsTrue)
 		})
 
 		It("from tag with name and modifiers", func() {
