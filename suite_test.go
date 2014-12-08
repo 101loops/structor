@@ -30,6 +30,7 @@ func newSimpleStruct() SimpleStruct {
 }
 
 type ComplexStruct struct {
+	SimpleStruct
 	One   SimpleStruct
 	Two   *SimpleStruct
 	Three []SimpleStruct

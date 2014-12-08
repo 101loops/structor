@@ -28,6 +28,7 @@ var _ = Describe("Codec", func() {
 
 			Check(fields[0].Name, Equals, "Dummy")
 			Check(fields[0].KeyType, IsNil)
+			Check(fields[0].Anonymous, IsFalse)
 			Check(fields[0].ElemType, IsNil)
 			Check(fields[0].Tag, Equals, &TagCodec{Values: map[int]string{0: "dummytag"}})
 			Check(fields[0].Parent, Equals, codec)
@@ -45,15 +46,15 @@ var _ = Describe("Codec", func() {
 
 			Check(codec, NotNil)
 			Check(codec.Type, Equals, rTyp)
-			Check(codec.FieldNames, Equals, []string{"One", "Two", "Three", "Four"})
+			Check(codec.FieldNames, Equals, []string{"SimpleStruct", "One", "Two", "Three", "Four"})
 
 			fields := codec.Fields
-			Check(fields, HasLen, 4)
+			Check(fields, HasLen, 5)
 
-			Check(fields[2].KeyType, IsNil)
-
-			Check(*fields[3].KeyType, Equals, strType)
-			Check(*fields[3].ElemType, Equals, dataType)
+			Check(fields[0].Anonymous, IsTrue)
+			Check(fields[3].KeyType, IsNil)
+			Check(*fields[4].KeyType, Equals, strType)
+			Check(*fields[4].ElemType, Equals, dataType)
 		})
 
 		It("from recursive struct", func() {

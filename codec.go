@@ -54,6 +54,9 @@ type FieldCodec struct {
 	// Index is the index of the field in the struct.
 	Index int
 
+	// Anonymous is whether the field is embedded.
+	Anonymous bool
+
 	// Name is the name of the field in the struct.
 	Name string
 
@@ -80,18 +83,16 @@ func newFieldCodec(rType reflect.Type, idx int, tagName string) *FieldCodec {
 	}
 
 	fType := fld.Type
-	fName := fld.Name
-	fTag := newTagCodec(fld.Tag.Get(tagName))
 	keyType, elemType := subTypesOf(fType)
-
 	return &FieldCodec{
-		Index:    idx,
-		Name:     fName,
-		Tag:      fTag,
-		Type:     fType,
-		KeyType:  keyType,
-		ElemType: elemType,
-		Attrs:    make(map[string]interface{}),
+		Index:     idx,
+		Anonymous: fld.Anonymous,
+		Name:      fld.Name,
+		Tag:       newTagCodec(fld.Tag.Get(tagName)),
+		Type:      fType,
+		KeyType:   keyType,
+		ElemType:  elemType,
+		Attrs:     make(map[string]interface{}),
 	}
 }
 
